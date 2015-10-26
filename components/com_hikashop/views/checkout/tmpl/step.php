@@ -126,6 +126,9 @@ defined('_JEXEC') or die('Restricted access');
 				</div><?php
 				}
 			}
+			if(HIKASHOP_RESPONSIVE) { ?>
+				</ul>
+			<?php }
 			?>
 			</div>
 <?php
