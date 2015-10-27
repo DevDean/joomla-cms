@@ -44,8 +44,8 @@ defined('_JEXEC') or die('Restricted access');
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php
-				if(!isset($this->element['product_order'])) $this->element['product_order'] = 'inherit';
-				echo $this->orderType->display($this->name.'[product_order]',$this->element['product_order'],'product');
+				if(!isset($this->element[$this->type.'_order'])) $this->element[$this->type.'_order'] = 'inherit';
+				echo $this->orderType->display($this->name.'['.$this->type.'_order]',$this->element[$this->type.'_order'],$this->type);
 				?>
 			</dd>
 		</dl>
