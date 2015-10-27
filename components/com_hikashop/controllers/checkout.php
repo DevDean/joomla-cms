@@ -1040,13 +1040,30 @@ class checkoutController extends hikashopController {
 		}else{
 			$shipping_done=true;
 		}
-		if(!$shipping_done){
-			$cart = $this->initCart();
+		$cart = $this->initCart();
+		if((empty($cart->shipping_groups) || !empty($cart->shipping_groups) && count($cart->shipping_groups) <= 1) && $shipping_done){
 			if(!$cart->has_shipping){
 				return true;
 			}
-			$app->enqueueMessage( JText::_('SELECT_SHIPPING') );
 		}
+
+		$config =& hikashop_config();
+		$force_shipping = $config->get('force_shipping');
+		if(!empty($cart->shipping_groups) && count($cart->shipping_groups) > 1) {
+			foreach($cart->shipping_groups as $shipping_group){
+				if(empty($shipping_group->products) || !empty($shipping_group->shippings))
+					continue;
+
+				if($force_shipping)
+					$shipping_done=false;
+
+				foreach($shipping_group->products as $group_product){
+					if(isset($group_product->product_weight) && $group_product->product_weight > 0)
+						$shipping_done=false;
+				}
+			}
+		}
+
 		return $shipping_done;
 	}
 

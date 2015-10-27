@@ -612,6 +612,32 @@ function hikashopSameAddress(value){
 			$shipping_groups = $shippingClass->getShippingGroups($order, $usable_rates);
 			$this->assignRef('shipping_groups', $shipping_groups);
 
+			$warehouse_order = 0;
+			$config =& hikashop_config();
+			$force_shipping = $config->get('force_shipping');
+			foreach($shipping_groups as $shipping_group){
+				$warehouse_order++;
+				if(empty($shipping_group->products) || !empty($shipping_group->shippings))
+					continue;
+
+				if($force_shipping){
+					if(!empty($shipping_group->name))
+						$app->enqueueMessage(JText::sprintf('NO_SHIPPING_METHOD_FOUND_FOR_WAREHOUSE',$shipping_group->name));
+					else
+						$app->enqueueMessage(JText::sprintf('NO_SHIPPING_METHOD_FOUND_FOR_WAREHOUSE',$warehouse_order));
+					continue;
+				}
+
+				foreach($shipping_group->products as $group_product){
+					if(isset($group_product->product_weight) && $group_product->product_weight > 0){
+						if(!empty($shipping_group->name))
+							$app->enqueueMessage(JText::sprintf('NO_SHIPPING_METHOD_FOUND_FOR_WAREHOUSE',$shipping_group->name));
+						else
+							$app->enqueueMessage(JText::sprintf('NO_SHIPPING_METHOD_FOUND_FOR_WAREHOUSE',$warehouse_order));
+						continue;
+					}
+				}
+			}
 			$currencyClass = hikashop_get('class.currency');
 
 			$currencyClass->processShippings($usable_rates,$order);

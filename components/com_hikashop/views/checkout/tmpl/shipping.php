@@ -63,10 +63,8 @@ if(empty($this->rates)) {
 		}
 
 if(!HIKASHOP_RESPONSIVE) { ?>
-		</ul>
 		<table>
 <?php } else { ?>
-		</ul>
 <div class="controls">
 	<div class="hika-radio">
 		<table class="hikashop_shipping_methods_table table table-striped table-hover">
@@ -219,14 +217,30 @@ if(!HIKASHOP_RESPONSIVE) { ?>
 		$k = 1-$k;
 	}
 	if($several_groups && empty($group_rates)) {
+		$shippable_products = FALSE;
+		foreach($group->products as $group_product){
+			if(isset($group_product->product_weight) && $group_product->product_weight > 0)
+				$shippable_products = TRUE;
+		}
+		if(!$shippable_products){
 ?>
-		<tr>
-			<td colspan="3">
-				<?php echo JText::_('NO_SHIPPING_REQUIRED'); ?>
-				<input type="radio" style="display:none;" name="hikashop_shipping_<?php echo $shipping_group_key; ?>" value="-_<?php echo $shipping_group_key; ?>" checked="checked" />
-			</td>
-		</tr>
+			<tr>
+				<td colspan="3">
+					<?php echo JText::_('NO_SHIPPING_REQUIRED'); ?>
+					<input type="radio" style="display:none;" name="hikashop_shipping_<?php echo $shipping_group_key; ?>" value="-_<?php echo $shipping_group_key; ?>" checked="checked" />
+				</td>
+			</tr>
 <?php
+		} else {
+?>
+			<tr>
+				<td colspan="3">
+					<?php echo JText::_('NO_SHIPPING_AVAILABLE_FOR_WAREHOUSE'); ?>
+					<input type="radio" style="display:none;" name="hikashop_shipping_<?php echo $shipping_group_key; ?>" value="-_<?php echo $shipping_group_key; ?>" checked="checked" />
+				</td>
+			</tr>
+<?php
+		}
 	}
 
 	if(!HIKASHOP_RESPONSIVE) {
